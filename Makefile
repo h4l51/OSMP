@@ -5,7 +5,7 @@ DEPS=
 
 BUILD_DIR := build
 
-SRCS := demo.c 
+SRCS := osmprun.c
 OBJS := $(addprefix $(BUILD_DIR)/,$(patsubst %.c,%.o,$(SRCS)))
 
 $(BUILD_DIR)/%.o: %.c $(DEPS)
@@ -23,6 +23,5 @@ clean:
 	rm -f $(BUILD_DIR)/*.o *~ core
 
 test:
-	./demo eins zwei drei
 	./osmprun
 
