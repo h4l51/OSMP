@@ -3,3 +3,10 @@
 //
 
 #include "OSMPLib.h"
+
+int main(void){
+
+    printf("OSMPLib.c funktioniert.")
+
+    return 0;
+}
