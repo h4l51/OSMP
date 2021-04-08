@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
             case 0:
             {
                 execl(  "./echoall",
+                        "./echoall",
                         "argument1",
-                        "argument2",
                         "execl",
                         NULL    
                 );
@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
             case 1:
             {
                 execle( "./echoall",
+                        "./echoall",
                         "argument1",
-                        "argument2",
                         "execle",
                         NULL,
                         env_init
@@ -60,8 +60,8 @@ int main(int argc, char *argv[])
             case 2:
             {
                 execlp( "./echoall",
+                        "./echoall",
                         "argument1",
-                        "argument2",
                         "execlp",
                         NULL
                 );
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
             }
             case 3:
             {
-                char* vars[] = {"argument1", "argument2", "execv", NULL};
+                char* vars[] = {"./echoall", "argument1", "execv", NULL};
                 execv(  "./echoall",
                          vars
                 );
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
             }
             case 4:
             {
-                char* vars[] = {"argument1", "argument2", "execve", NULL};
+                char* vars[] = {"./echoall", "argument1", "execve", NULL};
                 execve( "./echoall",
                         vars,
                         env_init
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
             }
             case 5:
             {
-                char* vars[] = {"argument1", "argument2", "execvp", NULL};
+                char* vars[] = {"./echoall", "argument1", "execvp", NULL};
                 execvp( "./echoall",
                         vars
                 );
