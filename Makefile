@@ -13,7 +13,7 @@ $(BUILD_DIR)/%.o: %.c $(DEPS)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 
-demo: $(OBJS)
+osmprun: $(OBJS)
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS)  $< $(LIBS) -o $@
 
