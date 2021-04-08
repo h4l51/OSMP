@@ -24,5 +24,4 @@ clean:
 
 test:
 	./demo eins zwei drei
-	./osmprun
 
