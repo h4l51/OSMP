@@ -12,14 +12,13 @@ int main(int argc, char *argv[])
     char *path = getenv("PATH");
     pid_t pid = getpid();
 
-    printf("ECHO > pid: %d Arguments:{ ", pid);
+    printf("\nECHO > pid: %d Arguments:{ ", pid);
     for(int i = 0; i < argc; i++)
     {
         printf("'%s' ", argv[i]);
         
     }
-    printf("} Environment:{ user: '%s' path: '%s' }\n", username, path);
-    sleep(1);
-
+    printf("} Environment:{ user: '%s'}", username);
+    //printf("} Environment:{ user: '%s' path: '%s' }", username, path);
     return 0;
 }
