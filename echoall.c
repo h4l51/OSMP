@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
     char *username = getenv("USER");
-    char *path = getenv("PATH");
+    //char *path = getenv("PATH");
     pid_t pid = getpid();
 
     printf("\nECHO > pid: %d Arguments:{ ", pid);

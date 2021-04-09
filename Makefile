@@ -12,12 +12,18 @@ $(BUILD_DIR)/%.o: %.c $(DEPS)
 	mkdir -p $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
+all: echoall osmprun
 
-osmprun: $(OBJS)
-	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS)  $< $(LIBS) -o $@
+osmprun: osmprun.c
+	$(CC) $(CFLAGS)  $^ $(LIBS) -o $@
+
+echoall: echoall.c
+	$(CC) $(CFLAGS)  $^ $(LIBS) -o $@
+
+
 
 .PHONY: clean
+.PHONY: all
 
 clean:
 	rm -f $(BUILD_DIR)/*.o *~ core
