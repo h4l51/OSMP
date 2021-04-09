@@ -8,6 +8,16 @@
 #define OSMP_SUCCESS    0
 #define OSMP_ERROR      -1
 
+#define OSMP_SHORT short int
+#define OSMP_INT int
+#define OSMP_LONG long int
+#define OSMP_UNSIGNED_CHAR unsigned char
+#define OSMP_UNSIGNED unsigned int
+#define OSMP_UNSIGNED_LONG unsigned long int
+#define OSMP_FLOAT float
+#define OSMP_DOUBLE double
+#define OSMP_BYTE char
+
 typedef int OSMP_Datatype;
 
 int OSMP_Init(int *argc, char ***argv);
