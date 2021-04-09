@@ -5,7 +5,7 @@ DEPS=
 
 BUILD_DIR := build
 
-SRCS := osmprun.c
+SRCS := osmprun.c echoall.c
 OBJS := $(addprefix $(BUILD_DIR)/,$(patsubst %.c,%.o,$(SRCS)))
 
 $(BUILD_DIR)/%.o: %.c $(DEPS)
