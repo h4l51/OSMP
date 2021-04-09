@@ -12,6 +12,7 @@ build:
   artifacts:
     paths:
       - osmprun
+      - echoall
     expire_in: 1 day
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
       # cache:

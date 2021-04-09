@@ -30,4 +30,5 @@ clean:
 
 test:
 	./osmprun
+	./echoall Echoall-Test
 
