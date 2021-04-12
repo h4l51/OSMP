@@ -2,10 +2,11 @@
 // Created by Lukas Böing on 08.04.21. for Praktikum 1
 //
 #include <stdio.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 extern int errno;
@@ -21,18 +22,21 @@ void printLastError()
         fflush(stdout);
 }
 
-int printInLoop(){
+void printInLoop(){
     pid_t pid = fork();
     if(pid == OSMP_ERROR){ //Fehlerbehandlung
 
         printLastError();
-        return OSMP_ERROR;
+        exit(OSMP_ERROR);
     }
     for(int i = 0; i<10; i++){
         printf("Ausgabe %d von Prozess mit PID: %d \n", i, pid);
         sleep(1);
     }
-    return OSMP_SUCCESS;
+
+    if(pid == OSMP_SUCCESS){
+        exit(0);
+    }
 }
 
 int main(int argc, char *argv[])
