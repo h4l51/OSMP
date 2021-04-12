@@ -5,5 +5,6 @@
 #define OSMPRUN_H
 
 void printLastError();
+int printInLoop();
 
 #endif //OSMPRUN_H

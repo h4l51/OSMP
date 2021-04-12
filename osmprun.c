@@ -21,8 +21,23 @@ void printLastError()
         fflush(stdout);
 }
 
+int printInLoop(){
+    pid_t pid = fork();
+    if(pid == OSMP_ERROR){ //Fehlerbehandlung
+
+        printLastError();
+        return OSMP_ERROR;
+    }
+    for(int i = 0; i<10; i++){
+        printf("Ausgabe %d von Prozess mit PID: %d \n", i, pid);
+        sleep(1);
+    }
+    return OSMP_SUCCESS;
+}
+
 int main(int argc, char *argv[])
 {
+    printInLoop();
     pid_t c_pid1;
     for(int i = 0; i < 6; i++)
     {
