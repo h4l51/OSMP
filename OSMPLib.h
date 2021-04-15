@@ -20,11 +20,16 @@
 
 typedef int OSMP_Datatype;
 
-int OSMP_Init(int *argc, char ***argv);
-int OSMP_Size(int *size);
-int OSMP_Rank(int *rank);
-int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest);
-int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len);
-int OSMP_Finalize(void);
+int OSMP_Init(int *argc, char ***argv);  /// Initializes the OSMP environment and enables access to the shared memory
+int OSMP_Size(int *size); /// Returns the number of OSMP processes, excluding the starter process
+int OSMP_Rank(int *rank); /// Returns the OSMP Processnumber of the calling process
+int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest); /// Sends a message
+/// \param buf Starting address of the puffer with the message
+/// \param count Amount of the elements from the given type
+/// \param datatype OSMP-Type of the data
+/// \param dest Number of the receiver
+/// \return
+int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len); /// Receives a message
+int OSMP_Finalize(void); /// Frees the shared memory
 
 #endif //DEMO_OSMPLIB_H

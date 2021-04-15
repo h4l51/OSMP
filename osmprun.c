@@ -16,13 +16,15 @@ extern int errno;
 
 char *env_init[] = { "USER=unknown", "PATH=\\tmp", NULL};
 
-void printLastError()
+void printLastError() /// Prints out the last error
+
 {
         printf("\nError in file: %s - line %d - %s", __FILE__, __LINE__, strerror(errno));
         fflush(stdout);
 }
 
-void printInLoop(){
+void printInLoop()  /// Prints out the PID and an Int from 1-10
+{
     pid_t pid = fork();
     if(pid == OSMP_ERROR){ //Fehlerbehandlung
 
@@ -39,7 +41,11 @@ void printInLoop(){
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[])/// Main method of osmprun.c,
+/// goes through all the various types of exec()-methods and tries them out
+/// \param argc
+/// \param argv
+/// \return
 {
     printInLoop();
     pid_t c_pid1;

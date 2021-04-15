@@ -4,7 +4,7 @@
 #ifndef OSMPRUN_H
 #define OSMPRUN_H
 
-void printLastError();
-void printInLoop();
+void printLastError(); /// Prints out the last error
+void printInLoop(); /// Prints out the process ID and an integer from 1 to 10 in a loop
 
 #endif //OSMPRUN_H

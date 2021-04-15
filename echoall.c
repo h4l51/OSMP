@@ -6,7 +6,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[])/// Simple echoall method 
+/// \param argc
+/// \param argv
+/// \return
 {
     char *username = getenv("USER");
     //char *path = getenv("PATH");
