@@ -1,0 +1,194 @@
+\hypertarget{_o_s_m_p_lib_8h}{}\doxysection{OSMPLib.\+h File Reference}
+\label{_o_s_m_p_lib_8h}\index{OSMPLib.h@{OSMPLib.h}}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_ab2c055dad93ab0d0a17c7b7ef810d1b5}{OSMP\+\_\+\+SUCCESS}}~0
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_a0caf0d5e1c57bb76bc70fd4eb287930f}{OSMP\+\_\+\+ERROR}}~-\/1
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_aa0fdf273ea3ad096b835d70d0b1d5e67}{OSMP\+\_\+\+SHORT}}~short int
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_aa6199cf644636db87d39e2371844538a}{OSMP\+\_\+\+INT}}~int
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_aa61e6cb9e152ff48a76f66bd60970445}{OSMP\+\_\+\+LONG}}~long int
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_a214b29efbe26f6e8e385df1a7f517285}{OSMP\+\_\+\+UNSIGNED\+\_\+\+CHAR}}~unsigned char
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_aefe18f8b122aedc703739b55f374b3fe}{OSMP\+\_\+\+UNSIGNED}}~unsigned int
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_ac802e41b8c340c35fb6b1793c5dbdeba}{OSMP\+\_\+\+UNSIGNED\+\_\+\+LONG}}~unsigned long int
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_a288bb4fb0e165bd23cf9bafdb0515be1}{OSMP\+\_\+\+FLOAT}}~float
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_a19c80918a30a82da4590127b959e8303}{OSMP\+\_\+\+DOUBLE}}~double
+\item 
+\#define \mbox{\hyperlink{_o_s_m_p_lib_8h_a3747bb068d26a4609cab74869bde7d74}{OSMP\+\_\+\+BYTE}}~char
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef int \mbox{\hyperlink{_o_s_m_p_lib_8h_ab5ea3e7b20254b63bbab69570eeb0d58}{OSMP\+\_\+\+Datatype}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{_o_s_m_p_lib_8h_a73c9ab24b72e2d70833cd050e0140b2c}{OSMP\+\_\+\+Init}} (int $\ast$argc, char $\ast$$\ast$$\ast$argv)
+\item 
+int \mbox{\hyperlink{_o_s_m_p_lib_8h_a04f155052e0f5e17ddd97034e2598f80}{OSMP\+\_\+\+Size}} (int $\ast$size)
+\begin{DoxyCompactList}\small\item\em Initializes the OSMP environment and enables access to the shared memory. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{_o_s_m_p_lib_8h_ab36fafc1db6c3c910c25e0c892aa287a}{OSMP\+\_\+\+Rank}} (int $\ast$rank)
+\begin{DoxyCompactList}\small\item\em Returns the number of OSMP processes, excluding the starter process. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{_o_s_m_p_lib_8h_ad079656f2dde33bffef78a11e32f5f3d}{OSMP\+\_\+\+Send}} (const void $\ast$buf, int count, \mbox{\hyperlink{_o_s_m_p_lib_8h_ab5ea3e7b20254b63bbab69570eeb0d58}{OSMP\+\_\+\+Datatype}} datatype, int dest)
+\begin{DoxyCompactList}\small\item\em Returns the OSMP Processnumber of the calling process. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{_o_s_m_p_lib_8h_a15b7fca805f4b469a65742d8343c464c}{OSMP\+\_\+\+Recv}} (void $\ast$buf, int count, \mbox{\hyperlink{_o_s_m_p_lib_8h_ab5ea3e7b20254b63bbab69570eeb0d58}{OSMP\+\_\+\+Datatype}} datatype, int $\ast$source, int $\ast$len)
+\item 
+int \mbox{\hyperlink{_o_s_m_p_lib_8h_a025b7a1d66ded5a4a843240623e55a77}{OSMP\+\_\+\+Finalize}} (void)
+\begin{DoxyCompactList}\small\item\em Receives a message. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a3747bb068d26a4609cab74869bde7d74}\label{_o_s_m_p_lib_8h_a3747bb068d26a4609cab74869bde7d74}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_BYTE@{OSMP\_BYTE}}
+\index{OSMP\_BYTE@{OSMP\_BYTE}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_BYTE}{OSMP\_BYTE}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+BYTE~char}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a19c80918a30a82da4590127b959e8303}\label{_o_s_m_p_lib_8h_a19c80918a30a82da4590127b959e8303}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_DOUBLE@{OSMP\_DOUBLE}}
+\index{OSMP\_DOUBLE@{OSMP\_DOUBLE}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_DOUBLE}{OSMP\_DOUBLE}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+DOUBLE~double}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a0caf0d5e1c57bb76bc70fd4eb287930f}\label{_o_s_m_p_lib_8h_a0caf0d5e1c57bb76bc70fd4eb287930f}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_ERROR@{OSMP\_ERROR}}
+\index{OSMP\_ERROR@{OSMP\_ERROR}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_ERROR}{OSMP\_ERROR}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+ERROR~-\/1}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a288bb4fb0e165bd23cf9bafdb0515be1}\label{_o_s_m_p_lib_8h_a288bb4fb0e165bd23cf9bafdb0515be1}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_FLOAT@{OSMP\_FLOAT}}
+\index{OSMP\_FLOAT@{OSMP\_FLOAT}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_FLOAT}{OSMP\_FLOAT}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+FLOAT~float}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_aa6199cf644636db87d39e2371844538a}\label{_o_s_m_p_lib_8h_aa6199cf644636db87d39e2371844538a}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_INT@{OSMP\_INT}}
+\index{OSMP\_INT@{OSMP\_INT}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_INT}{OSMP\_INT}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+INT~int}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_aa61e6cb9e152ff48a76f66bd60970445}\label{_o_s_m_p_lib_8h_aa61e6cb9e152ff48a76f66bd60970445}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_LONG@{OSMP\_LONG}}
+\index{OSMP\_LONG@{OSMP\_LONG}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_LONG}{OSMP\_LONG}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+LONG~long int}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_aa0fdf273ea3ad096b835d70d0b1d5e67}\label{_o_s_m_p_lib_8h_aa0fdf273ea3ad096b835d70d0b1d5e67}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_SHORT@{OSMP\_SHORT}}
+\index{OSMP\_SHORT@{OSMP\_SHORT}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_SHORT}{OSMP\_SHORT}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+SHORT~short int}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_ab2c055dad93ab0d0a17c7b7ef810d1b5}\label{_o_s_m_p_lib_8h_ab2c055dad93ab0d0a17c7b7ef810d1b5}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_SUCCESS@{OSMP\_SUCCESS}}
+\index{OSMP\_SUCCESS@{OSMP\_SUCCESS}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_SUCCESS}{OSMP\_SUCCESS}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+SUCCESS~0}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_aefe18f8b122aedc703739b55f374b3fe}\label{_o_s_m_p_lib_8h_aefe18f8b122aedc703739b55f374b3fe}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_UNSIGNED@{OSMP\_UNSIGNED}}
+\index{OSMP\_UNSIGNED@{OSMP\_UNSIGNED}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_UNSIGNED}{OSMP\_UNSIGNED}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+UNSIGNED~unsigned int}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a214b29efbe26f6e8e385df1a7f517285}\label{_o_s_m_p_lib_8h_a214b29efbe26f6e8e385df1a7f517285}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_UNSIGNED\_CHAR@{OSMP\_UNSIGNED\_CHAR}}
+\index{OSMP\_UNSIGNED\_CHAR@{OSMP\_UNSIGNED\_CHAR}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_UNSIGNED\_CHAR}{OSMP\_UNSIGNED\_CHAR}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+UNSIGNED\+\_\+\+CHAR~unsigned char}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_ac802e41b8c340c35fb6b1793c5dbdeba}\label{_o_s_m_p_lib_8h_ac802e41b8c340c35fb6b1793c5dbdeba}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_UNSIGNED\_LONG@{OSMP\_UNSIGNED\_LONG}}
+\index{OSMP\_UNSIGNED\_LONG@{OSMP\_UNSIGNED\_LONG}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_UNSIGNED\_LONG}{OSMP\_UNSIGNED\_LONG}}
+{\footnotesize\ttfamily \#define OSMP\+\_\+\+UNSIGNED\+\_\+\+LONG~unsigned long int}
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_ab5ea3e7b20254b63bbab69570eeb0d58}\label{_o_s_m_p_lib_8h_ab5ea3e7b20254b63bbab69570eeb0d58}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_Datatype@{OSMP\_Datatype}}
+\index{OSMP\_Datatype@{OSMP\_Datatype}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_Datatype}{OSMP\_Datatype}}
+{\footnotesize\ttfamily typedef int \mbox{\hyperlink{_o_s_m_p_lib_8h_ab5ea3e7b20254b63bbab69570eeb0d58}{OSMP\+\_\+\+Datatype}}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a025b7a1d66ded5a4a843240623e55a77}\label{_o_s_m_p_lib_8h_a025b7a1d66ded5a4a843240623e55a77}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_Finalize@{OSMP\_Finalize}}
+\index{OSMP\_Finalize@{OSMP\_Finalize}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_Finalize()}{OSMP\_Finalize()}}
+{\footnotesize\ttfamily int OSMP\+\_\+\+Finalize (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Receives a message. 
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a73c9ab24b72e2d70833cd050e0140b2c}\label{_o_s_m_p_lib_8h_a73c9ab24b72e2d70833cd050e0140b2c}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_Init@{OSMP\_Init}}
+\index{OSMP\_Init@{OSMP\_Init}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_Init()}{OSMP\_Init()}}
+{\footnotesize\ttfamily int OSMP\+\_\+\+Init (\begin{DoxyParamCaption}\item[{int $\ast$}]{argc,  }\item[{char $\ast$$\ast$$\ast$}]{argv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_ab36fafc1db6c3c910c25e0c892aa287a}\label{_o_s_m_p_lib_8h_ab36fafc1db6c3c910c25e0c892aa287a}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_Rank@{OSMP\_Rank}}
+\index{OSMP\_Rank@{OSMP\_Rank}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_Rank()}{OSMP\_Rank()}}
+{\footnotesize\ttfamily int OSMP\+\_\+\+Rank (\begin{DoxyParamCaption}\item[{int $\ast$}]{rank }\end{DoxyParamCaption})}
+
+
+
+Returns the number of OSMP processes, excluding the starter process. 
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a15b7fca805f4b469a65742d8343c464c}\label{_o_s_m_p_lib_8h_a15b7fca805f4b469a65742d8343c464c}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_Recv@{OSMP\_Recv}}
+\index{OSMP\_Recv@{OSMP\_Recv}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_Recv()}{OSMP\_Recv()}}
+{\footnotesize\ttfamily int OSMP\+\_\+\+Recv (\begin{DoxyParamCaption}\item[{void $\ast$}]{buf,  }\item[{int}]{count,  }\item[{\mbox{\hyperlink{_o_s_m_p_lib_8h_ab5ea3e7b20254b63bbab69570eeb0d58}{OSMP\+\_\+\+Datatype}}}]{datatype,  }\item[{int $\ast$}]{source,  }\item[{int $\ast$}]{len }\end{DoxyParamCaption})}
+
+Sends a message 
+\begin{DoxyParams}{Parameters}
+{\em buf} & Starting address of the puffer with the message \\
+\hline
+{\em count} & Amount of the elements from the given type \\
+\hline
+{\em datatype} & OSMP-\/\+Type of the data \\
+\hline
+{\em dest} & Number of the receiver \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_ad079656f2dde33bffef78a11e32f5f3d}\label{_o_s_m_p_lib_8h_ad079656f2dde33bffef78a11e32f5f3d}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_Send@{OSMP\_Send}}
+\index{OSMP\_Send@{OSMP\_Send}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_Send()}{OSMP\_Send()}}
+{\footnotesize\ttfamily int OSMP\+\_\+\+Send (\begin{DoxyParamCaption}\item[{const void $\ast$}]{buf,  }\item[{int}]{count,  }\item[{\mbox{\hyperlink{_o_s_m_p_lib_8h_ab5ea3e7b20254b63bbab69570eeb0d58}{OSMP\+\_\+\+Datatype}}}]{datatype,  }\item[{int}]{dest }\end{DoxyParamCaption})}
+
+
+
+Returns the OSMP Processnumber of the calling process. 
+
+\mbox{\Hypertarget{_o_s_m_p_lib_8h_a04f155052e0f5e17ddd97034e2598f80}\label{_o_s_m_p_lib_8h_a04f155052e0f5e17ddd97034e2598f80}} 
+\index{OSMPLib.h@{OSMPLib.h}!OSMP\_Size@{OSMP\_Size}}
+\index{OSMP\_Size@{OSMP\_Size}!OSMPLib.h@{OSMPLib.h}}
+\doxysubsubsection{\texorpdfstring{OSMP\_Size()}{OSMP\_Size()}}
+{\footnotesize\ttfamily int OSMP\+\_\+\+Size (\begin{DoxyParamCaption}\item[{int $\ast$}]{size }\end{DoxyParamCaption})}
+
+
+
+Initializes the OSMP environment and enables access to the shared memory. 
+

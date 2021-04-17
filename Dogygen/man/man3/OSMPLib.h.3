@@ -1,0 +1,148 @@
+.TH "OSMPLib.h" 3 "Sat Apr 17 2021" "Betriebssysteme" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+OSMPLib.h
+.SH SYNOPSIS
+.br
+.PP
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBOSMP_SUCCESS\fP   0"
+.br
+.ti -1c
+.RI "#define \fBOSMP_ERROR\fP   \-1"
+.br
+.ti -1c
+.RI "#define \fBOSMP_SHORT\fP   short int"
+.br
+.ti -1c
+.RI "#define \fBOSMP_INT\fP   int"
+.br
+.ti -1c
+.RI "#define \fBOSMP_LONG\fP   long int"
+.br
+.ti -1c
+.RI "#define \fBOSMP_UNSIGNED_CHAR\fP   unsigned char"
+.br
+.ti -1c
+.RI "#define \fBOSMP_UNSIGNED\fP   unsigned int"
+.br
+.ti -1c
+.RI "#define \fBOSMP_UNSIGNED_LONG\fP   unsigned long int"
+.br
+.ti -1c
+.RI "#define \fBOSMP_FLOAT\fP   float"
+.br
+.ti -1c
+.RI "#define \fBOSMP_DOUBLE\fP   double"
+.br
+.ti -1c
+.RI "#define \fBOSMP_BYTE\fP   char"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef int \fBOSMP_Datatype\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBOSMP_Init\fP (int *argc, char ***argv)"
+.br
+.ti -1c
+.RI "int \fBOSMP_Size\fP (int *size)"
+.br
+.RI "Initializes the OSMP environment and enables access to the shared memory\&. "
+.ti -1c
+.RI "int \fBOSMP_Rank\fP (int *rank)"
+.br
+.RI "Returns the number of OSMP processes, excluding the starter process\&. "
+.ti -1c
+.RI "int \fBOSMP_Send\fP (const void *buf, int count, \fBOSMP_Datatype\fP datatype, int dest)"
+.br
+.RI "Returns the OSMP Processnumber of the calling process\&. "
+.ti -1c
+.RI "int \fBOSMP_Recv\fP (void *buf, int count, \fBOSMP_Datatype\fP datatype, int *source, int *len)"
+.br
+.ti -1c
+.RI "int \fBOSMP_Finalize\fP (void)"
+.br
+.RI "Receives a message\&. "
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define OSMP_BYTE   char"
+
+.SS "#define OSMP_DOUBLE   double"
+
+.SS "#define OSMP_ERROR   \-1"
+
+.SS "#define OSMP_FLOAT   float"
+
+.SS "#define OSMP_INT   int"
+
+.SS "#define OSMP_LONG   long int"
+
+.SS "#define OSMP_SHORT   short int"
+
+.SS "#define OSMP_SUCCESS   0"
+
+.SS "#define OSMP_UNSIGNED   unsigned int"
+
+.SS "#define OSMP_UNSIGNED_CHAR   unsigned char"
+
+.SS "#define OSMP_UNSIGNED_LONG   unsigned long int"
+
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef int \fBOSMP_Datatype\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "int OSMP_Finalize (void)"
+
+.PP
+Receives a message\&. 
+.SS "int OSMP_Init (int * argc, char *** argv)"
+
+.SS "int OSMP_Rank (int * rank)"
+
+.PP
+Returns the number of OSMP processes, excluding the starter process\&. 
+.SS "int OSMP_Recv (void * buf, int count, \fBOSMP_Datatype\fP datatype, int * source, int * len)"
+Sends a message 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP Starting address of the puffer with the message 
+.br
+\fIcount\fP Amount of the elements from the given type 
+.br
+\fIdatatype\fP OSMP-Type of the data 
+.br
+\fIdest\fP Number of the receiver 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+.RE
+.PP
+
+.SS "int OSMP_Send (const void * buf, int count, \fBOSMP_Datatype\fP datatype, int dest)"
+
+.PP
+Returns the OSMP Processnumber of the calling process\&. 
+.SS "int OSMP_Size (int * size)"
+
+.PP
+Initializes the OSMP environment and enables access to the shared memory\&. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Betriebssysteme from the source code\&.

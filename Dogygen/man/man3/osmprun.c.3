@@ -1,0 +1,88 @@
+.TH "osmprun.c" 3 "Sat Apr 17 2021" "Betriebssysteme" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+osmprun.c
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <signal\&.h>\fP
+.br
+\fC#include <sys/types\&.h>\fP
+.br
+\fC#include <unistd\&.h>\fP
+.br
+\fC#include <sys/wait\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <string\&.h>\fP
+.br
+\fC#include <errno\&.h>\fP
+.br
+\fC#include 'OSMPLib\&.h'\fP
+.br
+\fC#include 'osmprun\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBprintLastError\fP ()"
+.br
+.RI "Prints out the last error\&. "
+.ti -1c
+.RI "void \fBprintInLoop\fP ()"
+.br
+.RI "Prints out the PID and an Int from 1-10\&. "
+.ti -1c
+.RI "int \fBmain\fP (int argc, char *argv[])"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "int \fBerrno\fP"
+.br
+.ti -1c
+.RI "char * \fBenv_init\fP [] = { 'USER=unknown', 'PATH=\\\\tmp', NULL}"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "int main (int argc, char * argv[])"
+Main method of \fBosmprun\&.c\fP, goes through all the various types of exec()-methods and tries them out 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargc\fP 
+.br
+\fIargv\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+.RE
+.PP
+
+.SS "void printInLoop ()"
+
+.PP
+Prints out the PID and an Int from 1-10\&. Prints out the last error\&. 
+.SS "void printLastError ()"
+
+.PP
+Prints out the last error\&. 
+.SH "Variable Documentation"
+.PP 
+.SS "char* env_init[] = { 'USER=unknown', 'PATH=\\\\tmp', NULL}"
+
+.SS "int errno\fC [extern]\fP"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Betriebssysteme from the source code\&.
