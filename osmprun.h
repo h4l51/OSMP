@@ -6,5 +6,6 @@
 
 void printLastError(); /// Prints out the last error
 void printInLoop(); /// Prints out the process ID and an integer from 1 to 10 in a loop
+void execTest();
 
 #endif //OSMPRUN_H
