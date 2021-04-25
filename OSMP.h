@@ -2,23 +2,34 @@
 // Created by Felix Halstrup on 08.04.21.
 //
 
-#ifndef DEMO_OSMPLIB_H
-#define DEMO_OSMPLIB_H
+#ifndef OSMPLIB_H
+#define OSMPLIB_H
 
 #define OSMP_SUCCESS    0
 #define OSMP_ERROR      -1
 
-#define OSMP_SHORT short int
-#define OSMP_INT int
-#define OSMP_LONG long int
-#define OSMP_UNSIGNED_CHAR unsigned char
-#define OSMP_UNSIGNED unsigned int
-#define OSMP_UNSIGNED_LONG unsigned long int
-#define OSMP_FLOAT float
-#define OSMP_DOUBLE double
-#define OSMP_BYTE char
+typedef void* OSMP_Request;
+
+// maximale Zahl der Nachrichten pro Prozess
+#define OSMP_MAX_MESSAGES_PROC 16
+
+// maximale Anzahl der Nachrichten, die insgesamt vorhanden sein dürfen
+#define OSMP_MAX_SLOTS 256
+
+// maximale Länge der Nutzlast einer Nachricht
+#define OSMP_MAX_PAYLOAD_LENGTH 1024
 
 typedef int OSMP_Datatype;
+typedef short int OSMP_SHORT;
+typedef int OSMP_INT;
+typedef long int OSMP_LONG;
+typedef unsigned char OSMP_UNSIGNED_CHAR;
+typedef unsigned int OSMP_UNSIGNED;
+typedef unsigned long int OSMP_UNSIGNED_LONG;
+typedef float OSMP_FLOAT;
+typedef double OSMP_DOUBLE;
+typedef char OSMP_BYTE;
+
 
 int OSMP_Init(int *argc, char ***argv);  /// Initializes the OSMP environment and enables access to the shared memory
 int OSMP_Size(int *size); /// Returns the number of OSMP processes, excluding the starter process
@@ -32,4 +43,4 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest); ///
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len); /// Receives a message
 int OSMP_Finalize(void); /// Frees the shared memory
 
-#endif //DEMO_OSMPLIB_H
+#endif // OSMPLIB_H
