@@ -14,10 +14,15 @@ extern int errno;
 #include "OSMP.h"
 #include "osmprun.h"
 
+//for posix shared memory
+#include <sys/mman.h>
+#include <sys/stat.h>        /* For mode constants */
+#include <fcntl.h>           /* For O_* constants */
+
+
 char *env_init[] = { "USER=unknown", "PATH=\\tmp", NULL};
 
 void printLastError() /// Prints out the last error
-
 {
         printf("\nError in file: %s - line %d - %s", __FILE__, __LINE__, strerror(errno));
         fflush(stdout);
@@ -137,7 +142,46 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 /// \param argv
 /// \return
 {
-    printInLoop();
-    execTest();
+    char *username = getenv("USER");
+    //printInLoop();
+    //execTest();
+    if(argc < 3)
+    {
+        printf("Not enough arguments in function call.\n");
+        exit(OSMP_ERROR);
+    }
+
+
+    OSMP_INT nProcessNum = 0;
+    OSMP_INT returnVal = sscanf(argv[1], "%d", &nProcessNum);
+    if(returnVal == EOF || returnVal <= 0 || nProcessNum <= 0)
+    {
+        printf("Argument 1 invalid, expected number of processes.\n");
+        exit(OSMP_ERROR);
+    }
+
+    //init shared memory
+    char* sharedMemoryName = calloc(strlen(username) + strlen(argv[2]) + 1, (sizeof(char)));
+    strcat(sharedMemoryName, username);
+    strcat(sharedMemoryName, "_");
+    strcat(sharedMemoryName, argv[2]);
+    OSMP_INT shmFileDescriptor = shm_open(sharedMemoryName, O_RDWR | O_CREAT,  ACCESSPERMS);
+    if(shmFileDescriptor == OSMP_ERROR)
+    {
+        printf("Creating shared memory failed.\n");
+        printLastError();
+        shm_unlink(sharedMemoryName);
+        free(sharedMemoryName);
+        exit(OSMP_ERROR);
+    }
+    else
+        printf("shared memory created, shmName: %s - fd: %d\n", sharedMemoryName, shmFileDescriptor);
+
+
+    shm_unlink(sharedMemoryName);
+    printf("unlinked from shared memory\n");
+    free(sharedMemoryName);
+    printf("\n");
     return 0;
 }
+

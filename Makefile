@@ -14,12 +14,11 @@ $(BUILD_DIR)/%.o: %.c $(DEPS)
 
 all: echoall osmprun
 
-osmprun: osmprun.c
-	$(CC) $(CFLAGS)  $^ $(LIBS) -o $@
+osmprun: osmprun.c OSMP.c
+	$(CC) $(CFLAGS)  $^ $(LIBS) -o $@ -lrt
 
 echoall: echoall.c
 	$(CC) $(CFLAGS)  $^ $(LIBS) -o $@
-
 
 
 .PHONY: clean

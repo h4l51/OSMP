@@ -1,7 +1,6 @@
 //
 // Created by Felix Halstrup on 08.04.21.
 //
-
 #ifndef OSMPLIB_H
 #define OSMPLIB_H
 

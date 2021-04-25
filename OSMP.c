@@ -4,13 +4,14 @@
 
 #include <stdio.h>
 #include "OSMP.h"
+#include <stdlib.h>
+#include <string.h>
 
-int main(void){
 
-    printf("OSMPLib.c funktioniert.");
-
-    return 0;
-}
+//for posix shared memory
+#include <sys/mman.h>
+#include <sys/stat.h>        /* For mode constants */
+#include <fcntl.h>           /* For O_* constants */
 
 int OSMP_Init(int *argc, char ***argv)
 {
