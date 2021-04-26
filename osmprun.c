@@ -142,9 +142,10 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 /// \param argv
 /// \return
 {
-    char *username = getenv("USER");
-    //printInLoop();
-    //execTest();
+    //char *username = getenv("USER");
+    char szProcessID[32];
+    pid_t processID = getpid();
+
     if(argc < 3)
     {
         printf("Not enough arguments in function call.\n");
@@ -161,10 +162,17 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     }
 
     //init shared memory
-    char* sharedMemoryName = calloc(strlen(username) + strlen(argv[2]) + 1, (sizeof(char)));
-    strcat(sharedMemoryName, username);
-    strcat(sharedMemoryName, "_");
-    strcat(sharedMemoryName, argv[2]);
+    if(sprintf(szProcessID, "%d", processID) <= 0)
+    {
+        exit(OSMP_ERROR);
+    }
+    char* sharedMemoryName = calloc(strlen(OSMP_SHMEM_NAME) + strlen(szProcessID) + 1, (sizeof(char)));
+    if(sprintf(sharedMemoryName, "%s%s", OSMP_SHMEM_NAME, szProcessID) <= 0)
+    {
+        free(sharedMemoryName);
+        exit(OSMP_ERROR);
+    }
+
     OSMP_INT shmFileDescriptor = shm_open(sharedMemoryName, O_RDWR | O_CREAT,  ACCESSPERMS);
     if(shmFileDescriptor == OSMP_ERROR)
     {
@@ -178,6 +186,25 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         printf("shared memory created, shmName: %s - fd: %d\n", sharedMemoryName, shmFileDescriptor);
 
 
+    struct stat testStat;
+
+    fstat(shmFileDescriptor, &testStat);
+    printf("shm size: %ld\n", testStat.st_size);
+
+    printf("changing shm size...\n");
+    if(ftruncate(shmFileDescriptor, 64) == OSMP_ERROR)
+    {
+        printf("failed to set shm size.");
+        printLastError();
+        shm_unlink(sharedMemoryName);
+        free(sharedMemoryName);
+        exit(OSMP_ERROR);
+    }
+
+    fstat(shmFileDescriptor, &testStat);
+    printf("shm size: %ld\n", testStat.st_size);
+
+    //sleep(10);
     shm_unlink(sharedMemoryName);
     printf("unlinked from shared memory\n");
     free(sharedMemoryName);

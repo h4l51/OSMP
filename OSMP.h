@@ -18,6 +18,9 @@ typedef void* OSMP_Request;
 // maximale Länge der Nutzlast einer Nachricht
 #define OSMP_MAX_PAYLOAD_LENGTH 1024
 
+//shared memory name
+#define OSMP_SHMEM_NAME "OSMPSHM_"
+
 typedef int OSMP_Datatype;
 typedef short int OSMP_SHORT;
 typedef int OSMP_INT;

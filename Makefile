@@ -28,6 +28,6 @@ clean:
 	rm -f $(BUILD_DIR)/*.o *~ core
 
 test:
-	./osmprun
+	./osmprun 2 ./osmpexecutable
 	./echoall Echoall-Test
 
