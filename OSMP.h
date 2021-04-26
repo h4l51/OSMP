@@ -35,6 +35,12 @@ typedef double OSMP_DOUBLE;
 typedef char OSMP_BYTE;
  */
 
+typedef struct {
+    int nProcessCount;
+    int* nProcessMemOffset;
+
+} OSMP_shm_info;
+
 typedef enum {
     OSMP_SHORT = 1,
     OSMP_INT,
@@ -47,6 +53,8 @@ typedef enum {
     OSMP_BYTE
 } OSMP_Datatype;
 
+extern int OSMP_ShmFileDescriptor;
+
 int OSMP_Init(int *argc, char ***argv);  /// Initializes the OSMP environment and enables access to the shared memory
 int OSMP_Size(int *size); /// Returns the number of OSMP processes, excluding the starter process
 int OSMP_Rank(int *rank); /// Returns the OSMP Processnumber of the calling process
@@ -58,5 +66,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest); ///
 /// \return
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len); /// Receives a message
 int OSMP_Finalize(void); /// Frees the shared memory
+
+char* OSMP_GetShmName(); /// Returns the name of the shared memory
 
 #endif // OSMPLIB_H

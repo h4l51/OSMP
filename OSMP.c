@@ -14,8 +14,18 @@
 #include <sys/stat.h>        /* For mode constants */
 #include <fcntl.h>           /* For O_* constants */
 
+char* sharedMemoryName;
+int OSMP_ShmFileDescriptor;
+
 int OSMP_Init(int *argc, char ***argv)
 {
+    sharedMemoryName = OSMP_GetShmName(getppid());
+
+    OSMP_ShmFileDescriptor = shm_open(sharedMemoryName, O_RDWR, ACCESSPERMS);
+    if(OSMP_ShmFileDescriptor == OSMP_ERROR)
+    {
+        return OSMP_ERROR;
+    }
     return OSMP_SUCCESS;
 }
 
@@ -119,23 +129,26 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
 }
 int OSMP_Finalize(void)
 {
-    char szProcessID[32];
-    char* sharedMemoryName;
-    pid_t parentPid = getppid();
+    int returnValue;
+    returnValue = shm_unlink(sharedMemoryName);
+    free(sharedMemoryName);
+    return returnValue;
+}
 
-    if(sprintf(szProcessID, "%d", parentPid) <= 0)
+char* OSMP_GetShmName(pid_t pid)
+{
+    char szProcessID[32];
+    if(sprintf(szProcessID, "%d", pid) <= 0)
     {
-        return OSMP_ERROR;
+        return NULL;
     }
     sharedMemoryName = calloc(strlen(OSMP_SHMEM_NAME) + strlen(szProcessID) + 1, (sizeof(char)));
 
-    if(sprintf(sharedMemoryName, "%s_%s", OSMP_SHMEM_NAME, szProcessID) <= 0)
+    if(sprintf(sharedMemoryName, "%s%s", OSMP_SHMEM_NAME, szProcessID) <= 0)
     {
         free(sharedMemoryName);
-        return OSMP_ERROR;
+        return NULL;
     }
 
-    int returnValue = shm_unlink(sharedMemoryName);
-    free(sharedMemoryName);
-    return returnValue;
+    return sharedMemoryName;
 }

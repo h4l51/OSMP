@@ -18,15 +18,20 @@ int main(int argc, char *argv[])/// osmpexecutable main
     int returnVal, size, rank, source;
     int bufin[2], bufout[2], len;
 
-    if((returnVal = OSMP_Init(&argc, &argv)) == OSMP_ERROR)
+    returnVal = OSMP_Init(&argc, &argv);
+    if(returnVal == OSMP_ERROR)
     {
         //error handling
     }
-    if((returnVal = OSMP_Rank( &rank )) == OSMP_ERROR)
+
+    returnVal = OSMP_Rank( &rank);
+    if(returnVal == OSMP_ERROR)
     {
         //error handling
     }
-    if((returnVal = OSMP_Size( &size )) == OSMP_ERROR)
+
+    returnVal = OSMP_Size( &size );
+    if(returnVal == OSMP_ERROR)
     {
         //error handling
     }

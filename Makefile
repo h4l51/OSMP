@@ -12,7 +12,7 @@ $(BUILD_DIR)/%.o: %.c $(DEPS)
 	mkdir -p $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-all: echoall osmprun
+all: echoall osmprun osmpexecutable
 
 osmprun: osmprun.c OSMP.c
 	$(CC) $(CFLAGS)  $^ $(LIBS) -o $@ -lrt

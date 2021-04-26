@@ -142,8 +142,9 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 /// \param argv
 /// \return
 {
+    struct stat testStat;
+    int nProcessNum, returnVal, shmFileDescriptor, wstatus;
     //char *username = getenv("USER");
-    char szProcessID[32];
     pid_t processID = getpid();
 
     if(argc < 3)
@@ -153,8 +154,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     }
 
 
-    int nProcessNum = 0;
-    int returnVal = sscanf(argv[1], "%d", &nProcessNum);
+    returnVal = sscanf(argv[1], "%d", &nProcessNum);
     if(returnVal == EOF || returnVal <= 0 || nProcessNum <= 0)
     {
         printf("Argument 1 invalid, expected number of processes.\n");
@@ -162,18 +162,9 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     }
 
     //init shared memory
-    if(sprintf(szProcessID, "%d", processID) <= 0)
-    {
-        exit(OSMP_ERROR);
-    }
-    char* sharedMemoryName = calloc(strlen(OSMP_SHMEM_NAME) + strlen(szProcessID) + 1, (sizeof(char)));
-    if(sprintf(sharedMemoryName, "%s%s", OSMP_SHMEM_NAME, szProcessID) <= 0)
-    {
-        free(sharedMemoryName);
-        exit(OSMP_ERROR);
-    }
+    char* sharedMemoryName = OSMP_GetShmName(processID);
 
-    int shmFileDescriptor = shm_open(sharedMemoryName, O_RDWR | O_CREAT,  ACCESSPERMS);
+    shmFileDescriptor = shm_open(sharedMemoryName, O_RDWR | O_CREAT,  ACCESSPERMS);
     if(shmFileDescriptor == OSMP_ERROR)
     {
         printf("Creating shared memory failed.\n");
@@ -185,8 +176,6 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     else
         printf("shared memory created, shmName: %s - fd: %d\n", sharedMemoryName, shmFileDescriptor);
 
-
-    struct stat testStat;
 
     fstat(shmFileDescriptor, &testStat);
     printf("shm size: %ld\n", testStat.st_size);
@@ -204,7 +193,6 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     fstat(shmFileDescriptor, &testStat);
     printf("shm size: %ld\n", testStat.st_size);
 
-
     pid_t c_pid[nProcessNum];
     for(int i = 0; i < nProcessNum; i++)
     {
@@ -216,10 +204,13 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         }
         else if (c_pid[i] == OSMP_SUCCESS) //child process
         {
-
-            execv(  "./echoall",
+            printf("hello i am child process %d, gonna exec %s now\n", i, argv[2]);
+            fflush(stdout);
+            execv(  argv[2],
                     &argv[2]
             );
+            printf("hello i am child process %d, woops exec failed\n", i);
+            fflush(stdout);
             printLastError();
             exit(OSMP_ERROR);
         }
@@ -230,7 +221,6 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         }
     }
 
-    int wstatus;
     for(int i = 0; i < nProcessNum; i++)
     {
         if(waitpid(c_pid[i], &wstatus, 0) == OSMP_ERROR)
