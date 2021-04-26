@@ -22,10 +22,10 @@ extern int errno;
 
 char *env_init[] = { "USER=unknown", "PATH=\\tmp", NULL};
 
-void printLastError() /// Prints out the last error
+void printLastError(char* file, int line) /// Prints out the last error
 {
-        printf("\nError in file: %s - line %d - %s", __FILE__, __LINE__, strerror(errno));
-        fflush(stdout);
+    printf("Error in file: %s - line %d - %s\n", file, line, strerror(errno));
+    fflush(stdout);
 }
 
 void printInLoop()  /// Prints out the PID and an Int from 1-10
@@ -33,7 +33,7 @@ void printInLoop()  /// Prints out the PID and an Int from 1-10
     pid_t pid = fork();
     if(pid == OSMP_ERROR){ //Fehlerbehandlung
 
-        printLastError();
+        printLastError(__FILE__, __LINE__);
         exit(OSMP_ERROR);
     }
     for(int i = 0; i<10; i++){
@@ -54,7 +54,7 @@ void execTest() /// goes through all the various types of exec()-methods and tri
         c_pid1 = fork();
         if(c_pid1 == OSMP_ERROR) //fork failed
         {
-            printLastError();
+            printLastError(__FILE__, __LINE__);
             exit(OSMP_ERROR);
         }
         else if(c_pid1 == OSMP_SUCCESS) //child process
@@ -120,14 +120,14 @@ void execTest() /// goes through all the various types of exec()-methods and tri
                 default:
                     break;
             }
-            printLastError();
+            printLastError(__FILE__, __LINE__);
             exit(OSMP_ERROR);
         }
         else //parent process
         {
             int wstatus;
             if(waitpid(c_pid1, &wstatus, 0) == OSMP_ERROR)
-                printLastError();
+                printLastError(__FILE__, __LINE__);
 
             printf("\nchild process %d ended return value: %d\n", c_pid1, wstatus);
             fflush(stdout);
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     if(shmFileDescriptor == OSMP_ERROR)
     {
         printf("Creating shared memory failed.\n");
-        printLastError();
+        printLastError(__FILE__, __LINE__);
         shm_unlink(sharedMemoryName);
         free(sharedMemoryName);
         exit(OSMP_ERROR);
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     if(ftruncate(shmFileDescriptor, 64) == OSMP_ERROR)
     {
         printf("failed to set shm size.");
-        printLastError();
+        printLastError(__FILE__, __LINE__);
         shm_unlink(sharedMemoryName);
         free(sharedMemoryName);
         exit(OSMP_ERROR);
@@ -199,19 +199,15 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         c_pid[i] = fork();
         if (c_pid[i] == OSMP_ERROR) //fork failed
         {
-            printLastError();
+            printLastError(__FILE__, __LINE__);
             continue;
         }
         else if (c_pid[i] == OSMP_SUCCESS) //child process
         {
-            printf("hello i am child process %d, gonna exec %s now\n", i, argv[2]);
-            fflush(stdout);
             execv(  argv[2],
                     &argv[2]
             );
-            printf("hello i am child process %d, woops exec failed\n", i);
-            fflush(stdout);
-            printLastError();
+            printLastError(__FILE__, __LINE__);
             exit(OSMP_ERROR);
         }
         else //parent process
@@ -224,7 +220,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     for(int i = 0; i < nProcessNum; i++)
     {
         if(waitpid(c_pid[i], &wstatus, 0) == OSMP_ERROR)
-            printLastError();
+            printLastError(__FILE__, __LINE__);
         else
         {
             printf("child process %d finished\n", i);
@@ -232,10 +228,15 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     }
 
     //sleep(10);
-    shm_unlink(sharedMemoryName);
-    printf("unlinked from shared memory\n");
+    returnVal = shm_unlink(sharedMemoryName);
+    if(returnVal == OSMP_ERROR)
+    {
+        printf("failed to remove shared memory");
+    }
+    else
+        printf("removed shared memory - return: %d\n", returnVal);
+
     free(sharedMemoryName);
-    printf("\n");
-    return 0;
+    exit(OSMP_SUCCESS);
 }
 

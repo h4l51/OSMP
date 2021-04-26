@@ -14,11 +14,16 @@
 #include <sys/stat.h>        /* For mode constants */
 #include <fcntl.h>           /* For O_* constants */
 
+
 char* sharedMemoryName;
 int OSMP_ShmFileDescriptor;
+void* OSMP_ShmPtr;
 
 int OSMP_Init(int *argc, char ***argv)
 {
+    struct stat shmStat;
+    int returnVal;
+
     sharedMemoryName = OSMP_GetShmName(getppid());
 
     OSMP_ShmFileDescriptor = shm_open(sharedMemoryName, O_RDWR, ACCESSPERMS);
@@ -26,6 +31,18 @@ int OSMP_Init(int *argc, char ***argv)
     {
         return OSMP_ERROR;
     }
+    returnVal = fstat(OSMP_ShmFileDescriptor, &shmStat);
+    if(returnVal == OSMP_ERROR)
+    {
+        return OSMP_ERROR;
+    }
+
+    OSMP_ShmPtr = mmap(NULL, (size_t)shmStat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, OSMP_ShmFileDescriptor, 0);
+    if(OSMP_ShmPtr == MAP_FAILED)
+    {
+        return OSMP_ERROR;
+    }
+
     return OSMP_SUCCESS;
 }
 
@@ -129,10 +146,26 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
 }
 int OSMP_Finalize(void)
 {
-    int returnValue;
-    returnValue = shm_unlink(sharedMemoryName);
+    int returnVal;
+    int out = OSMP_SUCCESS;
+    struct stat shmStat;
+
+    returnVal = fstat(OSMP_ShmFileDescriptor, &shmStat);
+    if(returnVal != OSMP_ERROR)
+    {
+        returnVal = munmap(OSMP_ShmPtr, (size_t)shmStat.st_size);
+        if(returnVal == OSMP_ERROR)
+        {
+            out = OSMP_ERROR;
+        }
+    }
+    else
+    {
+        out = OSMP_ERROR;
+    }
+
     free(sharedMemoryName);
-    return returnValue;
+    return out;
 }
 
 char* OSMP_GetShmName(pid_t pid)

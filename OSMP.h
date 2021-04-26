@@ -54,6 +54,7 @@ typedef enum {
 } OSMP_Datatype;
 
 extern int OSMP_ShmFileDescriptor;
+extern void* OSMP_ShmPtr;
 
 int OSMP_Init(int *argc, char ***argv);  /// Initializes the OSMP environment and enables access to the shared memory
 int OSMP_Size(int *size); /// Returns the number of OSMP processes, excluding the starter process
