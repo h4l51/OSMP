@@ -21,7 +21,9 @@ typedef void* OSMP_Request;
 //shared memory name
 #define OSMP_SHMEM_NAME "OSMPSHM_"
 
-typedef int OSMP_Datatype;
+
+
+/*
 typedef short int OSMP_SHORT;
 typedef int OSMP_INT;
 typedef long int OSMP_LONG;
@@ -31,7 +33,19 @@ typedef unsigned long int OSMP_UNSIGNED_LONG;
 typedef float OSMP_FLOAT;
 typedef double OSMP_DOUBLE;
 typedef char OSMP_BYTE;
+ */
 
+typedef enum {
+    OSMP_SHORT = 1,
+    OSMP_INT,
+    OSMP_LONG,
+    OSMP_UNSIGNED_CHAR,
+    OSMP_UNSIGNED,
+    OSMP_UNSIGNED_LONG,
+    OSMP_FLOAT,
+    OSMP_DOUBLE,
+    OSMP_BYTE
+} OSMP_Datatype;
 
 int OSMP_Init(int *argc, char ***argv);  /// Initializes the OSMP environment and enables access to the shared memory
 int OSMP_Size(int *size); /// Returns the number of OSMP processes, excluding the starter process

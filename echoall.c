@@ -15,13 +15,13 @@ int main(int argc, char *argv[])/// Simple echoall method
     //char *path = getenv("PATH");
     pid_t pid = getpid();
 
-    printf("\nECHO > pid: %d Arguments:{ ", pid);
+    printf("ECHO > pid: %d Arguments:{ ", pid);
     for(int i = 0; i < argc; i++)
     {
         printf("'%s' ", argv[i]);
         
     }
-    printf("} Environment:{ user: '%s'}", username);
+    printf("} Environment:{ user: '%s'}\n", username);
     //printf("} Environment:{ user: '%s' path: '%s' }", username, path);
-    return 0;
+    exit(0);
 }

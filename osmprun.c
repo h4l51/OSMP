@@ -153,8 +153,8 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     }
 
 
-    OSMP_INT nProcessNum = 0;
-    OSMP_INT returnVal = sscanf(argv[1], "%d", &nProcessNum);
+    int nProcessNum = 0;
+    int returnVal = sscanf(argv[1], "%d", &nProcessNum);
     if(returnVal == EOF || returnVal <= 0 || nProcessNum <= 0)
     {
         printf("Argument 1 invalid, expected number of processes.\n");
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         exit(OSMP_ERROR);
     }
 
-    OSMP_INT shmFileDescriptor = shm_open(sharedMemoryName, O_RDWR | O_CREAT,  ACCESSPERMS);
+    int shmFileDescriptor = shm_open(sharedMemoryName, O_RDWR | O_CREAT,  ACCESSPERMS);
     if(shmFileDescriptor == OSMP_ERROR)
     {
         printf("Creating shared memory failed.\n");
@@ -203,6 +203,43 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 
     fstat(shmFileDescriptor, &testStat);
     printf("shm size: %ld\n", testStat.st_size);
+
+
+    pid_t c_pid[nProcessNum];
+    for(int i = 0; i < nProcessNum; i++)
+    {
+        c_pid[i] = fork();
+        if (c_pid[i] == OSMP_ERROR) //fork failed
+        {
+            printLastError();
+            continue;
+        }
+        else if (c_pid[i] == OSMP_SUCCESS) //child process
+        {
+
+            execv(  "./echoall",
+                    &argv[2]
+            );
+            printLastError();
+            exit(OSMP_ERROR);
+        }
+        else //parent process
+        {
+            printf("Process %d started...\n", i);
+
+        }
+    }
+
+    int wstatus;
+    for(int i = 0; i < nProcessNum; i++)
+    {
+        if(waitpid(c_pid[i], &wstatus, 0) == OSMP_ERROR)
+            printLastError();
+        else
+        {
+            printf("child process %d finished\n", i);
+        }
+    }
 
     //sleep(10);
     shm_unlink(sharedMemoryName);

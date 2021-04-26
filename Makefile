@@ -5,7 +5,7 @@ DEPS=
 
 BUILD_DIR := build
 
-SRCS := osmprun.c echoall.c
+SRCS := osmprun.c echoall.c osmpexecutable.c
 OBJS := $(addprefix $(BUILD_DIR)/,$(patsubst %.c,%.o,$(SRCS)))
 
 $(BUILD_DIR)/%.o: %.c $(DEPS)
@@ -20,6 +20,8 @@ osmprun: osmprun.c OSMP.c
 echoall: echoall.c
 	$(CC) $(CFLAGS)  $^ $(LIBS) -o $@
 
+osmpexecutable: osmpexecutable.c OSMP.c
+	$(CC) $(CFLAGS)  $^ $(LIBS) -o $@ -lrt
 
 .PHONY: clean
 .PHONY: all

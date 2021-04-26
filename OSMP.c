@@ -29,10 +29,92 @@ int OSMP_Rank(int *rank)
 }
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
 {
+    switch(datatype)
+    {
+        case OSMP_SHORT: // short int
+        {
+            break;
+        }
+        case OSMP_INT: // int
+        {
+            break;
+        }
+        case OSMP_LONG: // long int
+        {
+            break;
+        }
+        case OSMP_UNSIGNED_CHAR: // unsinged char
+        {
+            break;
+        }
+        case OSMP_UNSIGNED: // unsigned int
+        {
+            break;
+        }
+        case OSMP_UNSIGNED_LONG: // unsigned long int
+        {
+            break;
+        }
+        case OSMP_FLOAT: // float
+        {
+            break;
+        }
+        case OSMP_DOUBLE: // double
+        {
+            break;
+        }
+        case OSMP_BYTE: // char
+        {
+            break;
+        }
+        default:
+            break;
+    }
     return OSMP_SUCCESS;
 }
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len)
 {
+    switch(datatype)
+    {
+        case OSMP_SHORT: // short int
+        {
+            break;
+        }
+        case OSMP_INT: // int
+        {
+            break;
+        }
+        case OSMP_LONG: // long int
+        {
+            break;
+        }
+        case OSMP_UNSIGNED_CHAR: // unsinged char
+        {
+            break;
+        }
+        case OSMP_UNSIGNED: // unsigned int
+        {
+            break;
+        }
+        case OSMP_UNSIGNED_LONG: // unsigned long int
+        {
+            break;
+        }
+        case OSMP_FLOAT: // float
+        {
+            break;
+        }
+        case OSMP_DOUBLE: // double
+        {
+            break;
+        }
+        case OSMP_BYTE: // char
+        {
+            break;
+        }
+        default:
+            break;
+    }
     return OSMP_SUCCESS;
 }
 int OSMP_Finalize(void)
@@ -53,7 +135,7 @@ int OSMP_Finalize(void)
         return OSMP_ERROR;
     }
 
-    OSMP_INT returnValue = shm_unlink(sharedMemoryName);
+    int returnValue = shm_unlink(sharedMemoryName);
     free(sharedMemoryName);
     return returnValue;
 }
