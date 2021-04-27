@@ -69,6 +69,7 @@ int OSMP_Rank(int *rank)
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
 {
     OSMP_Message* pMessageDest = OSMP_GetFirstMessagePointer(dest);
+    size_t nBytesToSend = 0;
 
     for(int i = 0; i < infoStruct->nMessagesPerProcess; i++)
     {
@@ -83,61 +84,72 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
         pMessageDest += 1;
     }
 
+    int rank, returnVal;
+    returnVal = OSMP_Rank(&rank);
+    if(returnVal == OSMP_ERROR)
+        return OSMP_ERROR;
+    pMessageDest->nSenderID = rank;
+    pMessageDest->nReceiverID = dest;
+
     switch(datatype)
     {
         case OSMP_BYTE: // char
         {
-            int rank, returnVal;
-            returnVal = OSMP_Rank(&rank);
-            if(returnVal == OSMP_ERROR)
-                return OSMP_ERROR;
-            pMessageDest->nSenderID = rank;
-            pMessageDest->nReceiverID = dest;
-            memcpy(pMessageDest->buffer, buf, (size_t)count);
+            nBytesToSend = (size_t)count * sizeof(char);
             break;
         }
         case OSMP_INT: // int
         {
-
+            nBytesToSend = (size_t)count * sizeof(int);
             break;
         }
         case OSMP_SHORT: // short int
         {
+            nBytesToSend = (size_t)count * sizeof(short int);
             break;
         }
         case OSMP_LONG: // long int
         {
+            nBytesToSend = (size_t)count * sizeof(long int);
             break;
         }
         case OSMP_UNSIGNED_CHAR: // unsinged char
         {
+            nBytesToSend = (size_t)count * sizeof(unsigned char);
             break;
         }
         case OSMP_UNSIGNED: // unsigned int
         {
+            nBytesToSend = (size_t)count * sizeof(unsigned int);
             break;
         }
         case OSMP_UNSIGNED_LONG: // unsigned long int
         {
+            nBytesToSend = (size_t)count * sizeof(unsigned long int);
             break;
         }
         case OSMP_FLOAT: // float
         {
+            nBytesToSend = (size_t)count * sizeof(float);
             break;
         }
         case OSMP_DOUBLE: // double
         {
+            nBytesToSend = (size_t)count * sizeof(double);
             break;
         }
 
         default:
             break;
     }
+    memcpy(pMessageDest->buffer, buf, nBytesToSend);
     return OSMP_SUCCESS;
 }
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len)
 {
     int rank, returnVal;
+    size_t bufferSize, buffElementCount, datatypeSize;
+
     returnVal = OSMP_Rank(&rank);
     if(returnVal == OSMP_ERROR)
         return OSMP_ERROR;
@@ -145,54 +157,70 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
     OSMP_Message* pMessageDest = OSMP_GetFirstMessagePointer(rank);
     *source = pMessageDest->nSenderID;
 
-    size_t bufferSize = sizeof(pMessageDest->buffer) / sizeof(pMessageDest->buffer[0]);
-    if(bufferSize > count)
-        bufferSize = (size_t)count;
+    bufferSize = sizeof(pMessageDest->buffer);
+
+
 
     switch(datatype)
     {
         case OSMP_BYTE: // char
         {
-            *len = (int)bufferSize;
-            memcpy(buf, pMessageDest->buffer, bufferSize);
+            datatypeSize = sizeof(char);
             break;
         }
         case OSMP_INT: // int
         {
+            datatypeSize = sizeof(int);
             break;
         }
         case OSMP_SHORT: // short int
         {
+            datatypeSize = sizeof(short int);
             break;
         }
         case OSMP_LONG: // long int
         {
+            datatypeSize = sizeof(long int);
             break;
         }
-        case OSMP_UNSIGNED_CHAR: // unsinged char
+        case OSMP_UNSIGNED_CHAR: // unsigned char
         {
+            datatypeSize = sizeof(unsigned char);
             break;
         }
         case OSMP_UNSIGNED: // unsigned int
         {
+            datatypeSize = sizeof(unsigned int);
             break;
         }
         case OSMP_UNSIGNED_LONG: // unsigned long int
         {
+            datatypeSize = sizeof(unsigned long int);
             break;
         }
         case OSMP_FLOAT: // float
         {
+            datatypeSize = sizeof(float);
             break;
         }
         case OSMP_DOUBLE: // double
         {
+            datatypeSize = sizeof(double);
             break;
         }
 
         default:
             break;
     }
+
+
+    buffElementCount = bufferSize / (size_t)datatypeSize;
+    if(buffElementCount > count)
+        bufferSize = (size_t)count * datatypeSize;
+
+    *len = (int)bufferSize;
+    memcpy(buf, pMessageDest->buffer, bufferSize);
+
     for(int i = 0; i < infoStruct->nMessagesPerProcess - 1; i++)
     {
         memcpy(pMessageDest + (unsigned int)i, pMessageDest + (unsigned int)(i+1),sizeof(OSMP_Message)); // move messages, last read gets overwritten

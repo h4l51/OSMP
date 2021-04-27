@@ -20,10 +20,9 @@ int main(int argc, char *argv[])/// osmpexecutable main
 /// \return
 {
     int returnVal, size, rank, source;
-    //int bufin[2], bufout[2];
+    int bufin[2], bufout[2];
     int len;
-    char testBuff[20] = "test123";
-    char testBuff2[20] = "hallo welt";
+    char testBuff[20] = "hallo welt";
 
     //sleep(1);
     pid_t pid = getpid();
@@ -69,8 +68,8 @@ int main(int argc, char *argv[])/// osmpexecutable main
 
     if(rank == 0)
     {
-        //bufin[0] = 4711;
-        //bufin[1] = 4712;
+        bufin[0] = 4711;
+        bufin[1] = 4712;
         returnVal = OSMP_Send( testBuff, 20, OSMP_BYTE, 1 );
         if(returnVal == OSMP_ERROR)
         {
@@ -81,7 +80,7 @@ int main(int argc, char *argv[])/// osmpexecutable main
         }
         printf("OSMP process %d send [%s] to %d \n", rank, testBuff, 1);
         fflush(stdout);
-        returnVal = OSMP_Send( testBuff2, 20, OSMP_BYTE, 1 );
+        returnVal = OSMP_Send( bufin, 2, OSMP_INT, 1 );
         if(returnVal == OSMP_ERROR)
         {
             //error handling
@@ -89,7 +88,7 @@ int main(int argc, char *argv[])/// osmpexecutable main
             OSMP_Finalize();
             exit(OSMP_ERROR);
         }
-        printf("OSMP process %d send [%s] to %d \n", rank, testBuff2, 1);
+        printf("OSMP process %d send [%d::%d] to %d \n", rank, bufin[0], bufin[1], 1);
         fflush(stdout);
     }
     else if(rank == 1)
@@ -106,7 +105,7 @@ int main(int argc, char *argv[])/// osmpexecutable main
         }
         printf("OSMP process %d received %d byte from %d [%s] \n", rank, len, source, testBuff);
 
-        returnVal = OSMP_Recv( testBuff, 20, OSMP_BYTE, &source, &len );
+        returnVal = OSMP_Recv( bufout, 2, OSMP_INT, &source, &len );
         if(returnVal == OSMP_ERROR)
         {
             //error handling
@@ -114,7 +113,7 @@ int main(int argc, char *argv[])/// osmpexecutable main
             OSMP_Finalize();
             exit(OSMP_ERROR);
         }
-        printf("OSMP process %d received %d byte from %d [%s] \n", rank, len, source, testBuff);
+        printf("OSMP process %d received %d byte from %d [%d::%d] \n", rank, len, source, bufout[0], bufout[1]);
         fflush(stdout);
     }
     returnVal = OSMP_Finalize();
