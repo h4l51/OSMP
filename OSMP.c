@@ -154,10 +154,10 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
     if(returnVal == OSMP_ERROR)
         return OSMP_ERROR;
 
-    OSMP_Message* pMessageDest = OSMP_GetFirstMessagePointer(rank);
-    *source = pMessageDest->nSenderID;
+    OSMP_Message* pMessageSource = OSMP_GetFirstMessagePointer(rank);
+    *source = pMessageSource->nSenderID;
 
-    bufferSize = sizeof(pMessageDest->buffer);
+    bufferSize = sizeof(pMessageSource->buffer);
 
 
 
@@ -213,18 +213,28 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
             break;
     }
 
-
     buffElementCount = bufferSize / (size_t)datatypeSize;
     if(buffElementCount > count)
         bufferSize = (size_t)count * datatypeSize;
 
     *len = (int)bufferSize;
-    memcpy(buf, pMessageDest->buffer, bufferSize);
+    memcpy(buf, pMessageSource->buffer, bufferSize);
 
+    // move messages, last read gets overwritten
+    OSMP_Message* messageIterator = pMessageSource;
     for(int i = 0; i < infoStruct->nMessagesPerProcess - 1; i++)
     {
-        memcpy(pMessageDest + (unsigned int)i, pMessageDest + (unsigned int)(i+1),sizeof(OSMP_Message)); // move messages, last read gets overwritten
+        if((pMessageSource + 1)->buffer[0] != '\0')
+        {
+            memcpy(pMessageSource, pMessageSource + 1,sizeof(OSMP_Message));
+        }
+        else
+        {
+            break;
+        }
+        messageIterator += 1;
     }
+    memset(messageIterator, 0, sizeof(OSMP_Message));
 
     return OSMP_SUCCESS;
 }
