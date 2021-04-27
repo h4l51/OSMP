@@ -37,7 +37,7 @@ typedef char OSMP_BYTE;
 
 typedef struct {
     int nProcessCount;
-    int* nProcessMemOffset;
+    int nProcessRank[][2];
 
 } OSMP_shm_info;
 
@@ -55,6 +55,7 @@ typedef enum {
 
 extern int OSMP_ShmFileDescriptor;
 extern void* OSMP_ShmPtr;
+extern OSMP_shm_info* infoStruct;
 
 int OSMP_Init(int *argc, char ***argv);  /// Initializes the OSMP environment and enables access to the shared memory
 int OSMP_Size(int *size); /// Returns the number of OSMP processes, excluding the starter process

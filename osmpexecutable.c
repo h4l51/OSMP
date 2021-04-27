@@ -22,6 +22,9 @@ int main(int argc, char *argv[])/// osmpexecutable main
     int returnVal, size, rank, source;
     int bufin[2], bufout[2], len;
 
+    //sleep(1);
+    pid_t pid = getpid();
+
     returnVal = OSMP_Init(&argc, &argv);
     if(returnVal == OSMP_ERROR)
     {
@@ -32,8 +35,14 @@ int main(int argc, char *argv[])/// osmpexecutable main
     }
 
 
-    returnVal = OSMP_Finalize();
-    return 0;
+    returnVal = OSMP_Size( &size );
+    if(returnVal == OSMP_ERROR)
+    {
+        //error handling
+        printLastError(__FILE__, __LINE__);
+        OSMP_Finalize();
+        exit(OSMP_ERROR);
+    }
 
     returnVal = OSMP_Rank( &rank);
     if(returnVal == OSMP_ERROR)
@@ -44,15 +53,11 @@ int main(int argc, char *argv[])/// osmpexecutable main
         exit(OSMP_ERROR);
     }
 
-    returnVal = OSMP_Size( &size );
-    if(returnVal == OSMP_ERROR)
-    {
-        //error handling
-        printLastError(__FILE__, __LINE__);
-        OSMP_Finalize();
-        exit(OSMP_ERROR);
-    }
+    printf("child process %d - size: %d - rank: %d\n", pid, size, rank);
 
+
+    returnVal = OSMP_Finalize();
+    return 0;
     if( size != 2 )
     {
         //error handling

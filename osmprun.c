@@ -142,7 +142,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 /// \param argv
 /// \return
 {
-    struct stat testStat;
+    struct stat shmStat;
     int nProcessNum, returnVal, shmFileDescriptor, wstatus;
     //char *username = getenv("USER");
     pid_t processID = getpid();
@@ -177,11 +177,11 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         printf("shared memory created, shmName: %s - fd: %d\n", sharedMemoryName, shmFileDescriptor);
 
 
-    fstat(shmFileDescriptor, &testStat);
-    printf("shm size: %ld\n", testStat.st_size);
+    fstat(shmFileDescriptor, &shmStat);
+    printf("shm size: %ld\n", shmStat.st_size);
 
     printf("changing shm size...\n");
-    if(ftruncate(shmFileDescriptor, 64) == OSMP_ERROR)
+    if(ftruncate(shmFileDescriptor, 4096) == OSMP_ERROR)
     {
         printf("failed to set shm size.");
         printLastError(__FILE__, __LINE__);
@@ -190,10 +190,24 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         exit(OSMP_ERROR);
     }
 
-    fstat(shmFileDescriptor, &testStat);
-    printf("shm size: %ld\n", testStat.st_size);
+    fstat(shmFileDescriptor, &shmStat);
+    printf("shm size: %ld\n", shmStat.st_size);
 
-    pid_t c_pid[nProcessNum];
+    void* mappingPtr = mmap(NULL, (size_t)shmStat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmFileDescriptor, 0);
+    if(mappingPtr == MAP_FAILED)
+    {
+        printf("failed to map memory.");
+        printLastError(__FILE__, __LINE__);
+        shm_unlink(sharedMemoryName);
+        free(sharedMemoryName);
+        exit(OSMP_ERROR);
+    }
+
+    //info block at shm start
+    OSMP_shm_info* starterInfoStruct = mappingPtr;
+    starterInfoStruct->nProcessCount = nProcessNum;
+
+    pid_t c_pid[20];
     for(int i = 0; i < nProcessNum; i++)
     {
         c_pid[i] = fork();
@@ -212,8 +226,9 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         }
         else //parent process
         {
-            printf("Process %d started...\n", i);
-
+            starterInfoStruct->nProcessRank[i][0] = c_pid[i];
+            starterInfoStruct->nProcessRank[i][1] = i;
+            printf("child process %d started: %d\n", i, c_pid[i]);
         }
     }
 
@@ -223,7 +238,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
             printLastError(__FILE__, __LINE__);
         else
         {
-            printf("child process %d finished\n", i);
+            printf("child process %d finished - pid: %d\n", i, c_pid[i]);
         }
     }
 

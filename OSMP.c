@@ -18,6 +18,7 @@
 char* sharedMemoryName;
 int OSMP_ShmFileDescriptor;
 void* OSMP_ShmPtr;
+OSMP_shm_info* infoStruct;
 
 int OSMP_Init(int *argc, char ***argv)
 {
@@ -43,16 +44,27 @@ int OSMP_Init(int *argc, char ***argv)
         return OSMP_ERROR;
     }
 
+    infoStruct = OSMP_ShmPtr;
     return OSMP_SUCCESS;
 }
 
 int OSMP_Size(int *size)
 {
+    *size = infoStruct->nProcessCount;
     return OSMP_SUCCESS;
 }
 int OSMP_Rank(int *rank)
 {
-    return OSMP_SUCCESS;
+    pid_t pid = getpid();
+    for(int i = 0; i < infoStruct->nProcessCount; i++)
+    {
+        if(infoStruct->nProcessRank[i][0] == pid)
+        {
+            *rank = infoStruct->nProcessRank[i][1];
+            return OSMP_SUCCESS;
+        }
+    }
+    return OSMP_ERROR;
 }
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
 {
