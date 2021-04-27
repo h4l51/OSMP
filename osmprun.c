@@ -142,8 +142,11 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 /// \param argv
 /// \return
 {
+    off_t shmSize = 0;
     struct stat shmStat;
-    int nProcessNum, returnVal, shmFileDescriptor, wstatus;
+    void* mappingPtr;
+    int nProcessNum, returnVal, shmFileDescriptor, wstatus, nMessageCount, nMessagesPerProcess;
+
     //char *username = getenv("USER");
     pid_t processID = getpid();
 
@@ -181,7 +184,19 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     printf("shm size: %ld\n", shmStat.st_size);
 
     printf("changing shm size...\n");
-    if(ftruncate(shmFileDescriptor, 4096) == OSMP_ERROR)
+    shmSize = (off_t)(sizeof(int) + sizeof(int) * 2 * (size_t)nProcessNum); // size of info struct
+
+    nMessagesPerProcess = OSMP_MAX_MESSAGES_PROC;
+    nMessageCount = nProcessNum * OSMP_MAX_MESSAGES_PROC;
+    if(nMessageCount > OSMP_MAX_SLOTS)
+    {
+        nMessagesPerProcess = OSMP_MAX_SLOTS / nProcessNum;
+        nMessageCount = nProcessNum * nMessagesPerProcess;
+    }
+
+    shmSize += (off_t)((size_t)nMessageCount * (sizeof(OSMP_Message))); // size of messages
+
+    if(ftruncate(shmFileDescriptor, shmSize) == OSMP_ERROR)
     {
         printf("failed to set shm size.");
         printLastError(__FILE__, __LINE__);
@@ -193,7 +208,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     fstat(shmFileDescriptor, &shmStat);
     printf("shm size: %ld\n", shmStat.st_size);
 
-    void* mappingPtr = mmap(NULL, (size_t)shmStat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmFileDescriptor, 0);
+    mappingPtr = mmap(NULL, (size_t)shmStat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmFileDescriptor, 0);
     if(mappingPtr == MAP_FAILED)
     {
         printf("failed to map memory.");
@@ -206,8 +221,9 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     //info block at shm start
     OSMP_shm_info* starterInfoStruct = mappingPtr;
     starterInfoStruct->nProcessCount = nProcessNum;
+    starterInfoStruct->nMessagesPerProcess = nMessagesPerProcess;
 
-    pid_t c_pid[20];
+    pid_t c_pid[nProcessNum];
     for(int i = 0; i < nProcessNum; i++)
     {
         c_pid[i] = fork();

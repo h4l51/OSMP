@@ -37,9 +37,16 @@ typedef char OSMP_BYTE;
 
 typedef struct {
     int nProcessCount;
-    int nProcessRank[][2];
-
+    int nMessagesPerProcess;
+    int nProcessRank[][2]; // pid // rank
 } OSMP_shm_info;
+
+typedef struct{
+    int nReceiverID;
+    int nSenderID;
+    char buffer[OSMP_MAX_PAYLOAD_LENGTH];
+
+} OSMP_Message;
 
 typedef enum {
     OSMP_SHORT = 1,
@@ -70,5 +77,6 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
 int OSMP_Finalize(void); /// Frees the shared memory
 
 char* OSMP_GetShmName(); /// Returns the name of the shared memory
+OSMP_Message* OSMP_GetFirstMessagePointer(int nOSMPProcess);
 
 #endif // OSMPLIB_H

@@ -68,13 +68,40 @@ int OSMP_Rank(int *rank)
 }
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
 {
-    switch(datatype)
+    OSMP_Message* pMessageDest = OSMP_GetFirstMessagePointer(dest);
+
+    for(int i = 0; i < infoStruct->nMessagesPerProcess; i++)
     {
-        case OSMP_SHORT: // short int
+        if(pMessageDest->buffer[0] == '\0')
         {
             break;
         }
+        else if(i == infoStruct->nMessagesPerProcess - 1)
+        {
+            return OSMP_ERROR; // no available space
+        }
+        pMessageDest += 1;
+    }
+
+    switch(datatype)
+    {
+        case OSMP_BYTE: // char
+        {
+            int rank, returnVal;
+            returnVal = OSMP_Rank(&rank);
+            if(returnVal == OSMP_ERROR)
+                return OSMP_ERROR;
+            pMessageDest->nSenderID = rank;
+            pMessageDest->nReceiverID = dest;
+            memcpy(pMessageDest->buffer, buf, (size_t)count);
+            break;
+        }
         case OSMP_INT: // int
+        {
+
+            break;
+        }
+        case OSMP_SHORT: // short int
         {
             break;
         }
@@ -102,10 +129,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
         {
             break;
         }
-        case OSMP_BYTE: // char
-        {
-            break;
-        }
+
         default:
             break;
     }
@@ -113,13 +137,31 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
 }
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len)
 {
+    int rank, returnVal;
+    returnVal = OSMP_Rank(&rank);
+    if(returnVal == OSMP_ERROR)
+        return OSMP_ERROR;
+
+    OSMP_Message* pMessageDest = OSMP_GetFirstMessagePointer(rank);
+    *source = pMessageDest->nSenderID;
+
+    size_t bufferSize = sizeof(pMessageDest->buffer) / sizeof(pMessageDest->buffer[0]);
+    if(bufferSize > count)
+        bufferSize = (size_t)count;
+
     switch(datatype)
     {
-        case OSMP_SHORT: // short int
+        case OSMP_BYTE: // char
         {
+            *len = (int)bufferSize;
+            memcpy(buf, pMessageDest->buffer, bufferSize);
             break;
         }
         case OSMP_INT: // int
+        {
+            break;
+        }
+        case OSMP_SHORT: // short int
         {
             break;
         }
@@ -147,13 +189,15 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
         {
             break;
         }
-        case OSMP_BYTE: // char
-        {
-            break;
-        }
+
         default:
             break;
     }
+    for(int i = 0; i < infoStruct->nMessagesPerProcess - 1; i++)
+    {
+        memcpy(pMessageDest + (unsigned int)i, pMessageDest + (unsigned int)(i+1),sizeof(OSMP_Message)); // move messages, last read gets overwritten
+    }
+
     return OSMP_SUCCESS;
 }
 int OSMP_Finalize(void)
@@ -196,4 +240,19 @@ char* OSMP_GetShmName(pid_t pid)
     }
 
     return sharedMemoryName;
+}
+
+OSMP_Message* OSMP_GetFirstMessagePointer(int nOSMPProcess)
+{
+    int* pInfoEnd = (int*)infoStruct;
+    pInfoEnd += (2 + (2 * infoStruct->nProcessCount)); // end of info struct
+
+    OSMP_Message* tmpPointer = (OSMP_Message*)pInfoEnd;
+
+
+    for(int i = 0; i < nOSMPProcess; i++)
+    {
+        tmpPointer += infoStruct->nMessagesPerProcess;
+    }
+    return tmpPointer;
 }
