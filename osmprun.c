@@ -198,7 +198,6 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 
     if(ftruncate(shmFileDescriptor, shmSize) == OSMP_ERROR)
     {
-        printf("failed to set shm size.");
         printLastError(__FILE__, __LINE__);
         shm_unlink(sharedMemoryName);
         free(sharedMemoryName);
