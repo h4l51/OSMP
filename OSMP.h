@@ -4,6 +4,10 @@
 #ifndef OSMPLIB_H
 #define OSMPLIB_H
 
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #define OSMP_SUCCESS    0
 #define OSMP_ERROR      -1
 
@@ -21,25 +25,10 @@ typedef void* OSMP_Request;
 //shared memory name
 #define OSMP_SHMEM_NAME "OSMPSHM_"
 
+typedef struct{
+    pid_t pid;
 
-
-/*
-typedef short int OSMP_SHORT;
-typedef int OSMP_INT;
-typedef long int OSMP_LONG;
-typedef unsigned char OSMP_UNSIGNED_CHAR;
-typedef unsigned int OSMP_UNSIGNED;
-typedef unsigned long int OSMP_UNSIGNED_LONG;
-typedef float OSMP_FLOAT;
-typedef double OSMP_DOUBLE;
-typedef char OSMP_BYTE;
- */
-
-typedef struct {
-    int nProcessCount;
-    int nMessagesPerProcess;
-    int nProcessRank[][2]; // pid // rank
-} OSMP_shm_info;
+}OSMP_Proc;
 
 typedef struct{
     int nReceiverID;
@@ -47,6 +36,14 @@ typedef struct{
     char buffer[OSMP_MAX_PAYLOAD_LENGTH];
 
 } OSMP_Message;
+
+typedef struct {
+    int nProcessCount;
+    OSMP_Message messages[OSMP_MAX_SLOTS];
+    OSMP_Proc proc[1];
+} OSMP_shm_info;
+
+
 
 typedef enum {
     OSMP_SHORT = 1,
@@ -60,9 +57,7 @@ typedef enum {
     OSMP_BYTE
 } OSMP_Datatype;
 
-extern int OSMP_ShmFileDescriptor;
-extern void* OSMP_ShmPtr;
-extern OSMP_shm_info* infoStruct;
+
 
 int OSMP_Init(int *argc, char ***argv);  /// Initializes the OSMP environment and enables access to the shared memory
 int OSMP_Size(int *size); /// Returns the number of OSMP processes, excluding the starter process
@@ -77,6 +72,7 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
 int OSMP_Finalize(void); /// Frees the shared memory
 
 char* OSMP_GetShmName(); /// Returns the name of the shared memory
-OSMP_Message* OSMP_GetFirstMessagePointer(int nOSMPProcess);
+
+size_t sizeOfType(OSMP_Datatype type);
 
 #endif // OSMPLIB_H
