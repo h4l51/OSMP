@@ -144,8 +144,8 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 {
     off_t shmSize = 0;
     struct stat shmStat;
-    void* mappingPtr;
-    int nProcessNum, returnVal, shmFileDescriptor, wstatus, nMessageCount, nMessagesPerProcess;
+    OSMP_shm_info* mappingPtr;
+    int nProcessNum, returnVal, shmFileDescriptor, wstatus;
 
     //char *username = getenv("USER");
     pid_t processID = getpid();
@@ -161,6 +161,11 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     if(returnVal == EOF || returnVal <= 0 || nProcessNum <= 0)
     {
         printf("Argument 1 invalid, expected number of processes.\n");
+        exit(OSMP_ERROR);
+    }
+    if(nProcessNum <= 0 || nProcessNum > 16)
+    {
+        printf("Invalid number of processes.\n");
         exit(OSMP_ERROR);
     }
 
@@ -179,22 +184,7 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     else
         printf("shared memory created, shmName: %s - fd: %d\n", sharedMemoryName, shmFileDescriptor);
 
-
-    fstat(shmFileDescriptor, &shmStat);
-    printf("shm size: %ld\n", shmStat.st_size);
-
-    printf("changing shm size...\n");
-    shmSize = (off_t)(sizeof(int) + sizeof(int) * 2 * (size_t)nProcessNum); // size of info struct
-
-    nMessagesPerProcess = OSMP_MAX_MESSAGES_PROC;
-    nMessageCount = nProcessNum * OSMP_MAX_MESSAGES_PROC;
-    if(nMessageCount > OSMP_MAX_SLOTS)
-    {
-        nMessagesPerProcess = OSMP_MAX_SLOTS / nProcessNum;
-        nMessageCount = nProcessNum * nMessagesPerProcess;
-    }
-
-    shmSize += (off_t)((size_t)nMessageCount * (sizeof(OSMP_Message))); // size of messages
+    shmSize = (off_t)(sizeof(OSMP_shm_info) + sizeof(OSMP_Proc) * (size_t)(nProcessNum - 1));
 
     if(ftruncate(shmFileDescriptor, shmSize) == OSMP_ERROR)
     {
@@ -205,9 +195,9 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     }
 
     fstat(shmFileDescriptor, &shmStat);
-    printf("shm size: %ld\n", shmStat.st_size);
+    printf("shm size: %ld byte\n", shmStat.st_size);
 
-    mappingPtr = mmap(NULL, (size_t)shmStat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmFileDescriptor, 0);
+    mappingPtr = (OSMP_shm_info*)mmap(NULL, (size_t)shmStat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmFileDescriptor, 0);
     if(mappingPtr == MAP_FAILED)
     {
         printf("failed to map memory.");
@@ -218,20 +208,18 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     }
 
     //info block at shm start
-    OSMP_shm_info* starterInfoStruct = mappingPtr;
-    starterInfoStruct->nProcessCount = nProcessNum;
-    starterInfoStruct->nMessagesPerProcess = nMessagesPerProcess;
+    mappingPtr->nProcessCount = nProcessNum;
 
-    pid_t c_pid[nProcessNum];
+    pid_t c_pid;
     for(int i = 0; i < nProcessNum; i++)
     {
-        c_pid[i] = fork();
-        if (c_pid[i] == OSMP_ERROR) //fork failed
+        c_pid = fork();
+        if (c_pid == OSMP_ERROR) //fork failed
         {
             printLastError(__FILE__, __LINE__);
             continue;
         }
-        else if (c_pid[i] == OSMP_SUCCESS) //child process
+        else if (c_pid == OSMP_SUCCESS) //child process
         {
             execv(  argv[2],
                     &argv[2]
@@ -241,19 +229,20 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         }
         else //parent process
         {
-            starterInfoStruct->nProcessRank[i][0] = c_pid[i];
-            starterInfoStruct->nProcessRank[i][1] = i;
-            printf("child process %d started: %d\n", i, c_pid[i]);
+            mappingPtr->proc[i].pid = c_pid;
+            //starterInfoStruct->nProcessRank[i][0] = c_pid[i];
+            //starterInfoStruct->nProcessRank[i][1] = i;
+            printf("child process %d started: %d\n", i, c_pid);
         }
     }
 
     for(int i = 0; i < nProcessNum; i++)
     {
-        if(waitpid(c_pid[i], &wstatus, 0) == OSMP_ERROR)
+        if(waitpid(mappingPtr->proc[i].pid, &wstatus, 0) == OSMP_ERROR)
             printLastError(__FILE__, __LINE__);
         else
         {
-            printf("child process %d finished - pid: %d\n", i, c_pid[i]);
+            printf("child process %d finished - pid: %d\n", i, mappingPtr->proc[i].pid);
         }
     }
 

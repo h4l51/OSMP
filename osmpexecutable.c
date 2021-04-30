@@ -60,7 +60,6 @@ int main(int argc, char *argv[])/// osmpexecutable main
     if(size != 2 )
     {
         printf("too many processes running.\n");
-        fflush(stdout);
         //error handling
         OSMP_Finalize();
         exit(OSMP_ERROR);
@@ -89,12 +88,10 @@ int main(int argc, char *argv[])/// osmpexecutable main
             exit(OSMP_ERROR);
         }
         printf("OSMP process %d send [%d::%d] to %d \n", rank, bufin[0], bufin[1], 1);
-        fflush(stdout);
     }
     else if(rank == 1)
     {
         sleep(2);
-        char testBuff[20] = "";
         returnVal = OSMP_Recv( testBuff, 20, OSMP_BYTE, &source, &len );
         if(returnVal == OSMP_ERROR)
         {
@@ -114,7 +111,6 @@ int main(int argc, char *argv[])/// osmpexecutable main
             exit(OSMP_ERROR);
         }
         printf("OSMP process %d received %d byte from %d [%d::%d] \n", rank, len, source, bufout[0], bufout[1]);
-        fflush(stdout);
     }
     returnVal = OSMP_Finalize();
     exit(0);
