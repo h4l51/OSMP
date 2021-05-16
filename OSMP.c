@@ -88,20 +88,20 @@ int OSMP_Rank(int *rank)
 }
 int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
 {
-    OSMP_Message* pMessageDest = &infoStruct->messages[dest * OSMP_MAX_MESSAGES_PROC];
+    OSMP_Message* pMessageDest = &infoStruct->messages[0];
     size_t nBytesToSend = 0;
 
-    for(int i = 0; i < OSMP_MAX_MESSAGES_PROC; i++)
+    for(int i = 0; i < OSMP_MAX_SLOTS; i++)
     {
         if(pMessageDest->buffer[0] == '\0')
         {
             break;
         }
-        else if(i == OSMP_MAX_MESSAGES_PROC - 1)
+        else if(i == OSMP_MAX_SLOTS - 1)
         {
             return OSMP_ERROR; // no available space
         }
-        pMessageDest += 1;
+        pMessageDest++;
     }
 
     int rank;
@@ -126,13 +126,21 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
         return OSMP_ERROR;
     }
 
-    OSMP_Message* pMessageSource = &infoStruct->messages[rank * OSMP_MAX_MESSAGES_PROC];
+    OSMP_Message* pMessageSource = &infoStruct->messages[0];
+    for(int i = 0; i < OSMP_MAX_SLOTS - 1; i++)
+    {
+        if(pMessageSource->nReceiverID == rank)
+            break;
+
+        if(i == OSMP_MAX_SLOTS - 1)
+            return OSMP_ERROR; // no message for process found
+
+        pMessageSource++;
+    }
+
     *source = pMessageSource->nSenderID;
 
     bufferSize = sizeof(pMessageSource->buffer);
-
-
-
     datatypeSize = sizeOfType(datatype);
 
     buffElementCount = bufferSize / (size_t)datatypeSize;
@@ -142,21 +150,8 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
     *len = (int)bufferSize;
     memcpy(buf, pMessageSource->buffer, bufferSize);
 
-    // move messages, last read gets overwritten
-    OSMP_Message* messageIterator = pMessageSource;
-    for(int i = 0; i < OSMP_MAX_MESSAGES_PROC - 1; i++)
-    {
-        if((pMessageSource + 1)->buffer[0] != '\0')
-        {
-            memcpy(pMessageSource, pMessageSource + 1,sizeof(OSMP_Message));
-        }
-        else
-        {
-            break;
-        }
-        messageIterator += 1;
-    }
-    memset(messageIterator, 0, sizeof(OSMP_Message));
+    //delete message
+    memset(pMessageSource, 0, sizeof(OSMP_Message));
 
     return OSMP_SUCCESS;
 }
