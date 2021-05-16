@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <semaphore.h>
+
 #define OSMP_SUCCESS    0
 #define OSMP_ERROR      -1
 
@@ -39,6 +41,7 @@ typedef struct{
 
 typedef struct {
     int nProcessCount;
+    sem_t sem_write;
     OSMP_Message messages[OSMP_MAX_SLOTS];
     OSMP_Proc proc[1];
 } OSMP_shm_info;

@@ -91,6 +91,9 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
     OSMP_Message* pMessageDest = &infoStruct->messages[0];
     size_t nBytesToSend = 0;
 
+    if( sem_wait(&infoStruct->sem_write) == OSMP_ERROR)
+        return OSMP_ERROR;
+
     for(int i = 0; i < OSMP_MAX_SLOTS; i++)
     {
         if(pMessageDest->buffer[0] == '\0')
@@ -99,6 +102,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
         }
         else if(i == OSMP_MAX_SLOTS - 1)
         {
+            sem_post(&infoStruct->sem_write);
             return OSMP_ERROR; // no available space
         }
         pMessageDest++;
@@ -106,13 +110,18 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
 
     int rank;
     if(OSMP_Rank(&rank) == OSMP_ERROR)
+    {
+        sem_post(&infoStruct->sem_write);
         return OSMP_ERROR;
+    }
+
     pMessageDest->nSenderID = rank;
     pMessageDest->nReceiverID = dest;
 
     nBytesToSend = (size_t)count * sizeOfType(datatype);
-
     memcpy(pMessageDest->buffer, buf, nBytesToSend);
+
+    sem_post(&infoStruct->sem_write);
     return OSMP_SUCCESS;
 }
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len)

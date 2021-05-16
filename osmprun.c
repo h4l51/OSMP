@@ -209,6 +209,13 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 
     //info block at shm start
     mappingPtr->nProcessCount = nProcessNum;
+    if(sem_init(&mappingPtr->sem_write, 1, 1) == OSMP_ERROR)
+    {
+        printLastError(__FILE__, __LINE__);
+        shm_unlink(sharedMemoryName);
+        free(sharedMemoryName);
+        exit(OSMP_ERROR);
+    }
 
     pid_t c_pid;
     for(int i = 0; i < nProcessNum; i++)
@@ -230,8 +237,6 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
         else //parent process
         {
             mappingPtr->proc[i].pid = c_pid;
-            //starterInfoStruct->nProcessRank[i][0] = c_pid[i];
-            //starterInfoStruct->nProcessRank[i][1] = i;
             printf("child process %d started: %d\n", i, c_pid);
         }
     }
@@ -247,7 +252,13 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
     }
 
     //sleep(10);
+    returnVal = sem_destroy(&mappingPtr->sem_write);
+    if(returnVal == OSMP_ERROR)
+    {
+        printLastError(__FILE__, __LINE__);
+    }
     returnVal = shm_unlink(sharedMemoryName);
+
     if(returnVal == OSMP_ERROR)
     {
         printf("failed to remove shared memory");
