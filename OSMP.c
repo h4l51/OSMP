@@ -130,14 +130,13 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
     int rank;
     size_t bufferSize, buffElementCount, datatypeSize;
 
-    if(enterCriticalSectionRead() == OSMP_ERROR)
-        return OSMP_ERROR;
-
     if(OSMP_Rank(&rank) == OSMP_ERROR)
     {
-        leaveCriticalSectionRead();
         return OSMP_ERROR;
     }
+
+    if(enterCriticalSectionRead() == OSMP_ERROR)
+        return OSMP_ERROR;
 
     OSMP_Message* pMessageSource = &infoStruct->messages[0];
     for(int i = 0; i < OSMP_MAX_SLOTS - 1; i++)
