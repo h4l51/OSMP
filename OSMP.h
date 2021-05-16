@@ -42,6 +42,8 @@ typedef struct{
 typedef struct {
     int nProcessCount;
     sem_t sem_write;
+    sem_t sem_readCount;
+    int readCount;
     OSMP_Message messages[OSMP_MAX_SLOTS];
     OSMP_Proc proc[1];
 } OSMP_shm_info;
@@ -77,5 +79,9 @@ int OSMP_Finalize(void); /// Frees the shared memory
 char* OSMP_GetShmName(); /// Returns the name of the shared memory
 
 size_t sizeOfType(OSMP_Datatype type);
+int enterCriticalSectionWrite();
+int leaveCriticalSectionWrite();
+int enterCriticalSectionRead();
+int leaveCriticalSectionRead();
 
 #endif // OSMPLIB_H

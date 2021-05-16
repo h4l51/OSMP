@@ -91,7 +91,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
     OSMP_Message* pMessageDest = &infoStruct->messages[0];
     size_t nBytesToSend = 0;
 
-    if( sem_wait(&infoStruct->sem_write) == OSMP_ERROR)
+    if(enterCriticalSectionWrite() == OSMP_ERROR)
         return OSMP_ERROR;
 
     for(int i = 0; i < OSMP_MAX_SLOTS; i++)
@@ -102,7 +102,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
         }
         else if(i == OSMP_MAX_SLOTS - 1)
         {
-            sem_post(&infoStruct->sem_write);
+            leaveCriticalSectionWrite();
             return OSMP_ERROR; // no available space
         }
         pMessageDest++;
@@ -111,7 +111,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
     int rank;
     if(OSMP_Rank(&rank) == OSMP_ERROR)
     {
-        sem_post(&infoStruct->sem_write);
+        leaveCriticalSectionWrite();
         return OSMP_ERROR;
     }
 
@@ -121,7 +121,7 @@ int OSMP_Send(const void *buf, int count, OSMP_Datatype datatype, int dest)
     nBytesToSend = (size_t)count * sizeOfType(datatype);
     memcpy(pMessageDest->buffer, buf, nBytesToSend);
 
-    sem_post(&infoStruct->sem_write);
+    leaveCriticalSectionWrite();
     return OSMP_SUCCESS;
 }
 int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *len)
@@ -130,8 +130,12 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
     int rank;
     size_t bufferSize, buffElementCount, datatypeSize;
 
+    if(enterCriticalSectionRead() == OSMP_ERROR)
+        return OSMP_ERROR;
+
     if(OSMP_Rank(&rank) == OSMP_ERROR)
     {
+        leaveCriticalSectionRead();
         return OSMP_ERROR;
     }
 
@@ -142,7 +146,11 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
             break;
 
         if(i == OSMP_MAX_SLOTS - 1)
+        {
+            leaveCriticalSectionRead();
             return OSMP_ERROR; // no message for process found
+        }
+
 
         pMessageSource++;
     }
@@ -159,8 +167,12 @@ int OSMP_Recv(void *buf, int count, OSMP_Datatype datatype, int *source, int *le
     *len = (int)bufferSize;
     memcpy(buf, pMessageSource->buffer, bufferSize);
 
+    leaveCriticalSectionRead();
+
     //delete message
+    enterCriticalSectionWrite();
     memset(pMessageSource, 0, sizeof(OSMP_Message));
+    leaveCriticalSectionWrite();
 
     return OSMP_SUCCESS;
 }
@@ -212,4 +224,57 @@ size_t sizeOfType(OSMP_Datatype type)
         return OSMP_SizeTable[type];
     else
         return 0;
+}
+
+int enterCriticalSectionWrite()
+{
+    if(sem_wait(&infoStruct->sem_write) == OSMP_ERROR)
+        return OSMP_ERROR;
+    return OSMP_SUCCESS;
+}
+
+int leaveCriticalSectionWrite()
+{
+    if(sem_post(&infoStruct->sem_write) == OSMP_ERROR)
+        return OSMP_ERROR;
+    return OSMP_SUCCESS;
+}
+
+int enterCriticalSectionRead()
+{
+    if(sem_wait(&infoStruct->sem_readCount) == OSMP_ERROR)
+    {
+        return OSMP_ERROR;
+    }
+    infoStruct->readCount++;
+    if(infoStruct->readCount == 1)
+    {
+        if(sem_wait(&infoStruct->sem_write) == OSMP_ERROR)
+        {
+            infoStruct->readCount--;
+            sem_post(&infoStruct->sem_readCount);
+            return OSMP_ERROR;
+        }
+    }
+    if(sem_post(&infoStruct->sem_readCount) == OSMP_ERROR)
+        return OSMP_ERROR;
+    return OSMP_SUCCESS;
+}
+
+int leaveCriticalSectionRead()
+{
+    int returnVal = OSMP_SUCCESS;
+    if(sem_wait(&infoStruct->sem_readCount) == OSMP_ERROR)
+    {
+        return OSMP_ERROR;
+    }
+    infoStruct->readCount--;
+    if(infoStruct->readCount == 0)
+    {
+        if(sem_post(&infoStruct->sem_write) == OSMP_ERROR)
+            returnVal = OSMP_ERROR;
+    }
+    if(sem_post(&infoStruct->sem_readCount) == OSMP_ERROR)
+        returnVal = OSMP_ERROR;
+    return returnVal;
 }

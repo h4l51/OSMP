@@ -209,11 +209,20 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 
     //info block at shm start
     mappingPtr->nProcessCount = nProcessNum;
-    if(sem_init(&mappingPtr->sem_write, 1, 1) == OSMP_ERROR)
+    mappingPtr->readCount = 0;
+    if(sem_init(&mappingPtr->sem_write, 1, 1) == OSMP_ERROR) // init write semaphore
     {
         printLastError(__FILE__, __LINE__);
         shm_unlink(sharedMemoryName);
         free(sharedMemoryName);
+        exit(OSMP_ERROR);
+    }
+    if(sem_init(&mappingPtr->sem_readCount, 1, 1) == OSMP_ERROR) // init readCount semaphore
+    {
+        printLastError(__FILE__, __LINE__);
+        shm_unlink(sharedMemoryName);
+        free(sharedMemoryName);
+        sem_destroy(&mappingPtr->sem_write);
         exit(OSMP_ERROR);
     }
 
@@ -253,6 +262,11 @@ int main(int argc, char *argv[])/// Main method of osmprun.c,
 
     //sleep(10);
     returnVal = sem_destroy(&mappingPtr->sem_write);
+    if(returnVal == OSMP_ERROR)
+    {
+        printLastError(__FILE__, __LINE__);
+    }
+    returnVal = sem_destroy(&mappingPtr->sem_readCount);
     if(returnVal == OSMP_ERROR)
     {
         printLastError(__FILE__, __LINE__);
